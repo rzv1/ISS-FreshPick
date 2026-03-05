@@ -1,0 +1,37 @@
+@startuml
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 80
+(Add product to cart) as (Add)
+(Manage Cart) as (Cart)
+(Manage Products) as (Products)
+(Login) as L
+
+User -down-|> Customer
+User -up-|> Manager
+
+Customer -up- (View Catalog)
+Customer -- (View Deals)
+Customer -- (Cart)
+Customer -- (View Account Page)
+
+(View Deals) <.. (Sort Products) : <<extend>>
+(Add) ..> (View Catalog) : <<extend>>
+(Add) ..> (View Deals) : <<extend>>
+(Cart) <.down. (Change product quantity) : <<extend>>
+(Cart) <. (Remove product) : <<extend>>
+(Cart) <.. (Finalize Order) : <<extend>>
+
+
+(View Account Page) ..> L : <<include>>
+(Cart) ..> L : <<include>>
+(View Deals) ...> L : <<include>>
+(View Catalog) ...> L : <<include>>)
+
+Manager -- (Products)
+(Update quantity) ...> (Products) : <<extend>>
+(Add Product) ...> (Products) : <<extend>>
+(View stock details) ...> (Products) : <extend>
+
+(Products) ...> L : <<include>>
+@enduml
