@@ -1,7 +1,16 @@
 import type {User} from "../models/User.ts";
 
 export class UserRepo{
-    public findOne(username: string, password: string): User | undefined {
-        return new User(1, username, password, "Ca", UserRole.MANAGER);
+    private urlAPI = 'http://localhost:3000/user';
+
+    async findOne(username: string, password: string): Promise<User | undefined> {
+        const res = await fetch(this.urlAPI, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username, password})
+        });
+        if (res.status === 401)
+            return undefined;
+        return res.json();
     }
 }

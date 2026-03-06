@@ -1,6 +1,6 @@
 import type {IRepo} from "../repositories/IRepo.ts";
 import  {Product} from "../models/Product.ts";
-import type {BatchItem} from "../models/BatchItem.ts";
+import {BatchItem} from "../models/BatchItem.ts";
 import type {BatchItemRepo} from "../repositories/BatchItemRepo.ts";
 import {InventoryDTO} from "../models/InventoryDTO.ts";
 
@@ -17,6 +17,15 @@ export class InventoryService{
         return this.repo.save(new Product(0, name, imageURL, price, ttl));
     }
 
+    public async saveBatchItem(productId: number, quantity: number){
+        const product = await this.repo.findOne(productId);
+        if(!product)
+            throw new Error("Invalid product");
+        const expireDate = new Date();
+        expireDate.setHours(expireDate.getHours() + product.fixedDurationHours);
+        return this.batchRepo.save(new BatchItem(0, productId, new Date(), expireDate, quantity));
+    }
+
     public getAllProducts(){
         return this.repo.findAll();
     }
@@ -25,36 +34,33 @@ export class InventoryService{
         return this.batchRepo.findAll();
     }
 
-    public getAllProductsByID(ids: number[]){
+    public async getAllProductsByID(ids: number[]){
         const products = new Array<Product>()
-        ids.forEach(id => {
-            const product = this.repo.findOne(id);
+        for (const id of ids) {
+            const product = await this.repo.findOne(id);
             if (product)
                 products.push(product);
-        });
+        }
         return products;
     }
 
-    public getAllInventory(){
-        const items = this.batchRepo.findAll();
+    public async getAllInventory(){
+        const items = await this.batchRepo.findAll();
         let total = 0
         let expired = 0
         items.forEach(it => {
-
+            total += it.quantity;
+            if(it.expiresAt < new Date())
+                expired += it.quantity;
         });
-        return new InventoryDTO(items, )
+        return new InventoryDTO(items, total, expired);
     }
 
-    public checkStock(batchId: number, quantity: number){
-        return this.batchRepo.isAvailable(batchId, quantity);
-    }
-
-    public incrementStock(batchId: number, quantity: number){
-        return this.batchRepo.incrementStock(batchId, quantity);
-    }
-
-    public decrementStock(batchId: number, quantity: number){
-        return this.batchRepo.decrementStock(batchId, quantity);
+    public async checkStock(batchId: number, quantity: number){
+        const batch = await this.batchRepo.findOne(batchId);
+        if(!batch)
+            throw new Error("Invalid batch id")
+        return batch?.quantity > quantity
     }
 
     public findBatchItem(batchId: number){
@@ -65,10 +71,7 @@ export class InventoryService{
         this.batchRepo.delete(batchId);
     }
 
-    public getDeals(){
-        const items = this.batchRepo.findAll();
-        const ids = new Array<number>();
-        items.forEach();
-        const products = this.getAllProductsByID(ids);
+    public async getAllDeals(){
+        return await this.batchRepo.getDeals();
     }
 }

@@ -40,9 +40,7 @@ class CartItem{
     -Id : Long
     -userId : Long
     -batchId : Long
-    -productName : String
     -selectedQuantity : Long
-    -appliedPrice : Long
 }
 
 class OrderItem{
@@ -55,7 +53,6 @@ class OrderItem{
 class Order{
     -orderId : Long
     -userId : Long
-    -itemsList : List<OrderItem>
     -totalAmount : Long
     -timestamp : LocalDateTime
 }

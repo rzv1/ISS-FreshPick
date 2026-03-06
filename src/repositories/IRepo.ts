@@ -1,6 +1,6 @@
 export interface IRepo<T>{
-    findAll(): T[];
-    findOne(id: number): T | undefined;
-    save(item: T): void;
-    delete(id: number) : void;
+    findAll(): Promise<T[]>;
+    findOne(id: number): Promise<T | undefined>;
+    save(item: T): Promise<T | undefined>;
+    delete(id: number) : Promise<void>;
 }

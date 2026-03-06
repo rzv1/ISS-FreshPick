@@ -2,29 +2,42 @@ import {BatchItem} from "../models/BatchItem.ts";
 import type {IRepo} from "./IRepo.ts";
 
 export class BatchItemRepo implements IRepo<BatchItem>{
-    public findOne(id: number){
-        return new BatchItem();
+    private urlAPI='http://localhost:3000/batches';
+
+    async findAll(): Promise<BatchItem[]> {
+        const res = await fetch(this.urlAPI);
+        if(res.status === 401)
+            throw new Error("Batch access error");
+        return res.json();
+    }
+    async findOne(id: number): Promise<BatchItem | undefined> {
+        const res = await fetch(this.urlAPI + "/" + id);
+        if(res.status === 401)
+            return undefined;
+        return res.json();
     }
 
-    public findAll(){
-        return true;
+    async save(item: Omit<BatchItem, 'id'>): Promise<BatchItem | undefined> {
+        const res = await fetch(this.urlAPI, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(item)
+        });
+        if (res.status === 401)
+            return undefined;
+        return res.json();
     }
 
-    public isAvailable(id: number, quant: number){
-        return true;
+    async delete(id: number): Promise<void> {
+        const res = await fetch(this.urlAPI + "/" + id, {
+            method: 'DELETE'
+        });
+        if(!res.ok)
+            throw new Error("error");
     }
 
-    public incrementStock(id: number, quant: number){
-        return true;
-    }
-
-    public decrementStock(id: number, quant: number){
-        return true;
-    }
-
-    delete(id: number): void {
-    }
-
-    save(item: BatchItem): void {
+    async getDeals() {
+        const res = await fetch(this.urlAPI + '/deals')
+        return res.json();
     }
 }
