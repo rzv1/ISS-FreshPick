@@ -87,7 +87,7 @@ M -> CW : 3: show()
 activate CW
 M --> M : 4: hide()
 deactivate M
-CW -> S : 5: getProducts()
+CW -> S : 5: getAllProducts()
 activate S
 S -> R : 6: findAll()
 activate R
