@@ -1,27 +1,118 @@
 @startuml
-'https://plantuml.com/class-diagram
+class User{
+    -id : Long
+    -username : String
+    -password : String
+    -name : String
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+    +getName() : String
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+class Product{
+    -id : Long
+    -name : String
+    -imageURL : String
+    -basePrice : Long
+    -fixedDurationHours : Long
+
+    +createBatch() : BatchItem
 }
 
+class BatchItem{
+    -id : Long
+    -productId : Long
+    -addedAt : LocalDateTime
+    -expiresAt : LocalDateTime
+    -quantity : Long
+
+    +isExpired()
+    +getRemainingTime()
+    +calculateCurrentPrice()
+}
+
+Product "1"--*"*" BatchItem : has
+
+interface DiscountStrategy{
+    +getDiscountedPrice(basePrice, hoursLeft)
+}
+
+class CartItem{
+    -Id : Long
+    -userId : Long
+    -batchId : Long
+    -productName : String
+    -selectedQuantity : Long
+    -appliedPrice : Long
+}
+
+class OrderItem{
+    -Id : Long
+    -productName : String
+    -selectedQuantity : Long
+    -appliedPrice : Long
+}
+
+class Order{
+    -orderId : Long
+    -userId : Long
+    -itemsList : List<OrderItem>
+    -totalAmount : Long
+    -timestamp : LocalDateTime
+}
+class InventoryService{
+    +addProductTemplate()
+    +incrementStock(templateId : Long)
+    +getAvailableProducts()
+    +getFreshnessDeals()
+}
+
+class CartService{
+    +addToCart()
+    +updateQuantity(item : CartItem, newQuant : Long)
+    +removeItem(item : CartItem)
+    +calculateTotal()
+    +checkout()
+}
+
+class ProductRepo{
+    +findAll()
+    +add()
+    +delete()
+}
+
+class UserRepo{
+    +findOne()
+}
+
+class BatchItemRepo{
+    +findAll()
+    +add()
+    +delete()
+}
+
+class OrderRepo{
+    +findAll()
+    +add()
+}
+
+class DealDTO{
+    -productName
+    -originalPrice
+    -discountedPrice
+    -quantityAvailable
+    -closestExpiry
+}
+
+class OrderDTO{
+    -orders : List<Order>
+    -totalSpent : Long
+    -lastOrder : LocalDateTime
+    -numberOfOrders : Long
+}
+
+class InventoryDTO{
+    -batches : List<BatchItem>
+    -totalItems : Long
+    -totalExpired : Long
+}
 @enduml

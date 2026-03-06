@@ -1,0 +1,364 @@
+@startuml VIEW_STOCK
+actor "Manager" as M
+participant "mW: MainWindow" as MW <<boundary>>
+participant "iW: inventoryWindow" as IW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "bR: batchItemRepo" as BR <<boundary>>
+database "SGBD" as DB
+
+M -> MW : 1: onDashboardClick()
+activate MW
+MW --> IW : 2: inventoryWindow(s) <<create>>
+MW -> IW : 3: view()
+activate IW
+MW --> MW : 4: hide()
+deactivate MW
+IW -> S : 5: getAllInventory()
+activate S
+S -> BR : 6: findAll()
+activate BR
+BR -> DB : 7: SELECT FROM
+activate DB
+DB --> BR : 8: List<BatchItem>
+deactivate DB
+BR --> S : 9: List<BatchItem>
+deactivate BR
+S --> IW : 10: InventoryDTO
+deactivate S
+deactivate IW
+@enduml
+
+@startuml REMOVE_PRODUCT
+actor "Manager" as M
+participant "a: Alert" as A <<boundary>>
+participant "iW: inventoryWindow" as IW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "bR: batchItemRepo" as BR <<boundary>>
+database "SGBD" as DB
+
+M -> IW : 1: onDeleteClick(batchItemID : Long)
+activate IW
+IW -> S : 2: deleteBatch(batchItemID : Long)
+activate S
+S -> BR : 3: delete(batchItemID : Long)
+activate BR
+BR -> DB : 4: DELETE FROM
+activate DB
+DB --> BR : 5: c = true / false
+deactivate DB
+BR --> S : 6: c = true / false
+deactivate BR
+S --> IW : 7: c = true / false
+deactivate S
+alt c == false
+   IW --> A : 8: <<create>>
+   IW -> A : 9: showAlert("error occurred")
+   activate A
+   deactivate A
+else c == true
+    IW -> S : 10: getAllInventory()
+    activate S
+    S -> BR : 11: findAll()
+    activate BR
+    BR -> DB : 12: SELECT FROM
+    activate DB
+    DB --> BR : 13: List<BatchItem>
+    deactivate DB
+    BR --> S : 14: List<BatchItem>
+    deactivate BR
+    S --> IW : 15: InventoryDTO
+    deactivate S
+    deactivate IW
+end
+@enduml
+
+@startuml VIEW_CATALOG
+actor "Customer" as C
+participant "mW: mainWindow" as M <<boundary>>
+participant "cW: catalogWindow" as CW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "pR: productRepo" as R <<boundary>>
+database "SGBD" as DB
+
+C -> M : 1: onCatalogClick()
+activate M
+M --> CW : 2: catalogWindows(s) <<create>>
+M -> CW : 3: show()
+activate CW
+M --> M : 4: hide()
+deactivate M
+CW -> S : 5: getProducts()
+activate S
+S -> R : 6: findAll()
+activate R
+R -> DB : 7: SELECT FROM
+activate DB
+DB --> R : 8: List<Product>
+deactivate DB
+deactivate R
+R --> S : 9: List<Product>
+S --> CW : 10: List<Product>
+deactivate S
+deactivate CW
+@enduml
+
+@startuml BROWSE_DEALS
+actor "Customer" as C
+participant "mW: mainWindow" as M <<boundary>>
+participant "dW: dealsWindow" as DW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "pR: productRepo" as PR <<boundary>>
+participant "bR: batchItemRepo" as R <<boundary>>
+database "SGBD" as DB
+
+C -> M : 1: onDealsClick()
+activate M
+M --> DW : 2: dealsWindow(s) <<create>>
+M -> DW : 3: show()
+activate DW
+M --> M : 4: hide()
+deactivate M
+DW -> S : 5: getDeals()
+activate S
+S -> R : 6: findAll()
+activate R
+R -> DB : 7: SELECT FROM
+activate DB
+DB --> R : 8: List<BatchItem>
+deactivate DB
+R --> S : 9: List<BatchItem>
+deactivate R
+S -> S : 10: groupAndFilterByProduct(batches : BatchItem)
+S -> PR : 11: findAll(ids : List<Long>)
+activate PR
+PR -> DB : 12: SELECT FROM WHERE
+activate DB
+DB --> PR : 13: List<Product>
+deactivate DB
+PR --> S : 14: List<Product>
+deactivate PR
+S --> DW : 15: List<DealDTO>
+@enduml
+
+@startuml ADD_PRODUCT_TO_CART
+actor "Customer" as C
+participant "mW: mainWindow" as M <<boundary>>
+participant "a: Alert" as A <<boundary>>
+participant "s: Service" as S <<control>>
+participant "bR: batchRepo" as BR <<boundary>>
+participant "cR: cartRepo" as R <<boundary>>
+database "SGBD" as DB
+
+C -> M : 1: clickOnAddToCart()
+activate M
+M -> S : 2: addCartItem(batchID, productName, price)
+activate S
+S -> BR : 3: findOne(batchID : Long)
+activate BR
+BR -> DB : 4: SELECT FROM
+activate DB
+DB --> BR : 5: BatchItem / null
+deactivate DB
+BR --> S : 4: BatchItem / null
+deactivate BR
+alt batch == null
+    S --> M : 5: null
+    M --> A : 6: <<create>>
+    M -> A : 7: showAlert("stock changed")
+    activate A
+    deactivate A
+else batch != null
+    S -> R : 8: saveItem(item : cartItem)
+    activate R
+    R -> DB : 8: INSERT INTO
+    activate DB
+    DB --> R : 9: true
+    deactivate DB
+    R --> S : 10: true
+    deactivate R
+    S --> M : 11: true
+    deactivate S
+    M --> A : 12: <<create>>
+    M -> A : 13: showAlert("item added")
+    activate A
+    deactivate A
+end
+@enduml
+
+@startuml CHANGE_CART_PRODUCT_QUANTITY
+actor "Customer" as C
+participant "mW: mainWindow" as M <<boundary>>
+participant "cW: cartWindow" as CW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "cR: cartItemRepo" as R <<boundary>>
+database "SGBD" as DB
+C -> M: 1: onCartClick()
+activate M
+M --> CW: 2: cartWindow(u, s) <<create>>
+M -> CW: 3: show()
+activate CW
+M -> M: 4: hide()
+deactivate M
+alt
+C -> CW: 5: onPlusClick(itemId : Long)
+CW -> S: 6: increaseItemQuantity(itemId : Long)
+activate S
+S -> R: 7: increaseItemQuantity(itemId : Long)
+activate R
+R -> DB: 8: UPDATE SET WHERE
+activate DB
+DB --> R: 9: cartItem
+deactivate DB
+R --> S: 10: cartItem
+deactivate R
+S --> CW: 11: cartItem
+deactivate S
+else
+C -> CW: 5: onMinusClick(itemId : Long)
+CW -> S: 6: decreaseItemQuantity(itemId : Long)
+activate S
+S -> R: 7: decreaseItemQuantity(itemId : Long)
+activate R
+R -> DB: 8: UPDATE SET WHERE
+activate DB
+DB --> R: 9: cartItem
+deactivate DB
+R --> S: 10: cartItem
+deactivate R
+S --> CW: 11: cartItem
+deactivate S
+deactivate CW
+end
+@enduml
+
+@startuml REMOVE_PRODUCT_FROM_CART
+actor "Customer" as C
+participant "cW: cartWindow" as CW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "cR: cartRepo" as R <<boundary>>
+database "SGBD" as DB
+
+C -> CW: 1: onDeleteIconClick()
+activate CW
+CW -> S: 2: removeItem(cartItemId : Long)
+activate S
+S -> R: 3: removeItem(Id : Long)
+activate R
+R -> DB: 4: DELETE FROM
+activate DB
+DB --> R: 5: true / throw
+deactivate DB
+R --> S: 6: true
+deactivate R
+S -> R: 7: findAll()
+activate R
+R -> DB: 8: SELECT FROM
+activate DB
+DB --> R: 9: List<CartItem>
+deactivate DB
+R --> S: 10: List<CartItem>
+deactivate R
+S --> CW: 11: List<CartItem>
+deactivate S
+deactivate CW
+@enduml
+
+@startuml FINALIZE_ORDER
+actor "Customer" as C
+participant "cW: cartWindow" as CW <<boundary>>
+participant "a: Alarm" as A <<boundary>>
+participant "s: Service" as S <<control>>
+participant "iR: cartItemRepo" as CR <<boundary>>
+participant "bR: batchItemRepo" as BR <<boundary>>
+participant "oR: orderRepo" as OR <<boundary>>
+database "SGBD" as DB
+
+C -> CW: 1: pressFinalizeButton()
+activate CW
+CW -> S: 2: onFinalize()
+activate S
+S -> CR: 3: findAllForUser(userId : Long)
+activate CR
+CR -> DB: 4: SELECT FROM
+activate DB
+DB --> CR: 5: List<CartItem>
+deactivate DB
+CR --> S: 6: List<CartItem>
+deactivate CR
+loop for each cartItem
+    S -> BR: 7: checkStock(batchId, quantity)
+    activate BR
+    BR -> DB: 8: SELECT FROM
+    activate DB
+    DB --> BR: 9: item / null
+    deactivate DB
+    BR --> S: 10: isAvailable
+    deactivate BR
+
+    alt isAvailable == false
+        S --> A : showMessage("Stoc insuficient")
+        activate A
+        deactivate A
+    end
+end
+S -> OR: 11: save(userId, cartItems)
+activate OR
+OR --> S: 12: orderId
+deactivate OR
+
+loop for each cartItem
+   S -> BR: 13: decrementStock(batchId, quantity)
+   activate BR
+   deactivate BR
+   S -> CR: 14: delete(cartItemId)
+   activate CR
+   deactivate CR
+end
+S --> A: showMessage(orderId)
+deactivate S
+@enduml
+
+@startuml BROWSE_ACCOUNT
+actor "Customer" as C
+participant "mW: mainWindow" as M <<boundary>>
+participant "aW: accountWindow" as AW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "oR: orderRepo" as R <<boundary>>
+database "SGBD" as DB
+
+C -> M : 1: clickOnAccount()
+activate M
+M --> AW : 2: accountWindow(u, s) <<create>>
+M -> AW : 3: show()
+activate AW
+M --> M : 4: hide()
+deactivate M
+AW -> S : 5: getOrders() : OrderDTO
+activate S
+S -> R : 6: findAllByUser() : List<Order>
+activate R
+R -> DB : 7: SELECT FROM WHERE
+activate DB
+DB --> R : 8: List<Order>
+deactivate DB
+R --> S : 9: List<Order>
+deactivate R
+S -> S: 10: extractStatistics()
+S --> AW: 11: OrderDTO
+deactivate S
+deactivate AW
+@enduml
+
+@startuml SORT_PRODUCTS
+actor "Customer" as C
+participant "dW: dealsWindow" as DW <<boundary>>
+participant "s: Service" as S <<control>>
+
+C -> DW : 1: onSortByNameClick()
+activate DW
+DW -> S : 2: sortByName(value : Long)
+activate S
+S --> DW : 3: deals = List<DealDTO>
+deactivate S
+deactivate DW
+@enduml

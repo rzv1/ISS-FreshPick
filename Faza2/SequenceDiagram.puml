@@ -1,0 +1,178 @@
+@startuml CUSTOMER_LOGIN
+actor "Customer" as C
+participant "MainClass" as Main <<boundary>>
+participant "mM: ManagerMainPage" as mMain <<boundary>>
+participant "a: AlertBox" as alert <<boundary>>
+participant "lW: LoginWindow" as LW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "uR: UserRepo" as R <<repository>>
+database "SGBD" as DB
+C -> Main : 1: main()
+activate Main
+Main --> R : 2: uR = UserRepo() <<create>>
+Main --> S : 3: s = Service(uR) <<create>>
+Main --> LW : 4: LoginWindow(s) <<create>>
+Main -> LW : 5: show()
+activate LW
+deactivate Main
+C -> LW : 6: username = insertUsername() : String
+C -> LW : 7: password = insertPassword() : String
+C -> LW : 8: onLogIn()
+LW -> S : 9: c = login(username, password) : Manager
+activate S
+S -> R : 10: u = findOne(username, password) : User
+activate R
+R -> DB : 11: SELECT SQL
+activate DB
+DB --> R : 12: user / null
+deactivate DB
+R --> S : 13: user / null
+deactivate R
+S --> LW : 14: c / null
+deactivate S
+alt c != null
+    LW --> mMain : 15: managerMainWindow(s, c) <<create>>
+    LW -> mMain : 16: show()
+    activate mMain
+    deactivate mMain
+    LW --> LW : 17: hide()
+else c == null
+    LW --> alert : 18: <<create>>
+    activate alert
+    LW -> alert : 19: showAlert("Invalid credentials")
+    deactivate alert
+end
+@enduml
+
+@startuml MANAGER_LOGIN
+actor "Manager" as M
+participant "MainClass" as Main <<boundary>>
+participant "mM: ManagerMainPage" as mMain <<boundary>>
+participant "a: AlertBox" as alert <<boundary>>
+participant "lW: LoginWindow" as LW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "uR: UserRepo" as R <<repository>>
+database "SGBD" as DB
+M -> Main : 1: main()
+activate Main
+Main --> R : 2: uR = UserRepo() <<create>>
+Main --> S : 3: s = Service(uR) <<create>>
+Main --> LW : 4: LoginWindow(s) <<create>>
+Main -> LW : 5: show()
+activate LW
+deactivate Main
+M -> LW : 6: username = insertUsername() : String
+M -> LW : 7: password = insertPassword() : String
+M -> LW : 8: onLogIn()
+LW -> S : 9: m = login(username, password) : Manager
+activate S
+S -> R : 10: u = findOne(username, password) : User
+activate R
+R -> DB : 11: SELECT SQL
+activate DB
+DB --> R : 12: user / null
+deactivate DB
+R --> S : 13: user / null
+deactivate R
+S --> LW : 14: m / null
+deactivate S
+alt m != null
+    LW --> mMain : 15: managerMainWindow(s, m) <<create>>
+    LW -> mMain : 16: show()
+    activate mMain
+    deactivate mMain
+    LW --> LW : 17: hide()
+else m == null
+    LW --> alert : 18: <<create>>
+    activate alert
+    LW -> alert : 19: showAlert("Invalid credentials")
+    deactivate alert
+end
+@enduml
+
+@startuml ADD_PRODUCT
+actor "Manager" as M
+participant "a: Alert" as A <<boundary>>
+participant "aW: addWindow" as AW <<boundary>>
+participant "s: service" as S <<control>>
+participant "pR: productRepo" as R <<boundary>>
+database "SGBD" as DB
+M --> AW : 1: <<create>>
+M -> AW : 2: name = insertName() : String
+activate AW
+M -> AW : 3: price = insertPrice() : String
+M -> AW : 4: imageURL = insertImageURL() : String
+M -> AW : 5: ttl = insertTTL() : String
+M -> AW : 6: clickSave()
+AW -> S : 7: saveProduct(name, price, imageURL, ttl) : Product
+activate S
+S -> R : 8: save(name, price, imageURL, ttl)
+activate R
+R -> DB : 9: INSERT INTO
+activate DB
+DB --> R : 10: b = true / false
+deactivate DB
+R -> S : 11 : b = true / false
+deactivate R
+S -> AW : 12 : b = true / false
+deactivate S
+AW --> A : 13: <<create>>
+alt b == true
+    AW -> A : 14: showAlert("Successful operation")
+    activate A
+    deactivate A
+else b == false
+    AW -> A : 15: showAlert("Error occurred")
+    activate A
+    deactivate A
+end
+@enduml
+
+@startuml UPDATE_QUANTITY
+actor "Manager" as M
+participant "mW: mainWindow" as MW <<boundary>>
+participant "a: Alert" as A <<boundary>>
+participant "sW: stockWindow" as SW <<boundary>>
+participant "s: Service" as S <<control>>
+participant "pR: ProductRepo" as PR <<boundary>>
+participant "bR: BatchItemRepo" as BR <<boundary>>
+database "SGBD" as DB
+M -> MW : 0: showStockWindow()
+activate MW
+MW --> SW : 1: stockWindow(s)<<create>>
+MW -> SW : 2: show()
+activate SW
+MW -> MW : hide()
+deactivate MW
+SW -> S : 3:  products = getAllProducts() : List<Product>
+activate S
+S -> PR : 4: products = findAll() : List<Product>
+activate PR
+PR -> DB : 5: SELECT FROM
+activate DB
+DB --> PR : 6: products
+deactivate DB
+PR -> S : 7: products
+deactivate PR
+S -> SW : 8: products
+deactivate S
+M -> SW : 9: clicks a button
+SW -> S : 10: onBtnClick(productId : Long, quantity : Long)
+activate S
+S -> BR : 11: addBatch(productId : Long, quantity : Long, TTL : Long)
+activate BR
+BR --> S : 12: b = true / false
+deactivate BR
+S --> SW : 13: b = true / false
+deactivate S
+alt b == true
+    SW --> A : 14: <<create>>
+    SW -> A : 15: showAlert("operation successful")
+    activate A
+    deactivate A
+else b == false
+SW -> A : 16: showAlert("error occurred")
+activate A
+deactivate A
+end
+@enduml
