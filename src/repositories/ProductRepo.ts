@@ -18,6 +18,7 @@ export class ProductRepo implements IRepo<Product>{
         return res.json();
     }
     async save(item: Omit<Product, 'id'>): Promise<Product> {
+        console.log(JSON.stringify(item))
         const res = await fetch(this.urlAPI, {
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },

@@ -3,17 +3,17 @@ import { CirclePlus, BaggageClaimIcon, NetworkIcon } from 'lucide-react'
 
 export const ManagerNavbar = () => {
     return (
-        <nav className="fixed bottom-0 w-full bg-white border-t flex justify-around p-2">
-            <Link to="/plus" className="flex flex-col items-center">
-                <CirclePlus size={24}></CirclePlus>
+        <nav className="fixed bottom-0 w-full bg-white border-t border-harvest flex justify-around p-5">
+            <Link to="/admin/add" className="flex flex-col items-center">
+                <CirclePlus size={24} color="#7b8964"></CirclePlus>
             </Link>
 
-            <Link to="/" className="flex flex-col items-center">
-                <NetworkIcon size={24}></NetworkIcon>
+            <Link to="/admin" className="flex flex-col items-center">
+                <NetworkIcon size={24} color="#7b8964"></NetworkIcon>
             </Link>
 
-            <Link to="/stock" className="flex flex-col items-center">
-                <BaggageClaimIcon size={24}></BaggageClaimIcon>
+            <Link to="/admin/stock" className="flex flex-col items-center">
+                <BaggageClaimIcon size={24} color="#7b8964"></BaggageClaimIcon>
             </Link>
         </nav>
     );

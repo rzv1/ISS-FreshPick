@@ -1,14 +1,13 @@
-import  {type BatchItem} from "./BatchItem.ts";
+export interface Item{
+    id: number;
+    name: string;
+    units: number;
+    status: 'Fresh' | 'Expired';
+    imageSrc: string;
+}
 
-export class InventoryDTO{
-    public readonly batches: Array<BatchItem>;
-    public readonly totalItems: number;
-    public readonly totalExpired: number;
-
-
-    constructor(batches: Array<BatchItem>, totalItems: number, totalExpired: number) {
-        this.batches = batches;
-        this.totalItems = totalItems;
-        this.totalExpired = totalExpired;
-    }
+export interface InventoryDTO{
+    totalItems: number;
+    expiringSoon: number;
+    items: Item[];
 }

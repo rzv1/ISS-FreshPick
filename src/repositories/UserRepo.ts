@@ -1,7 +1,7 @@
 import type {User} from "../models/User.ts";
 
 export class UserRepo{
-    private urlAPI = 'http://localhost:3000/user';
+    private urlAPI = 'http://localhost:3000/users/login';
 
     async findOne(username: string, password: string): Promise<User | undefined> {
         const res = await fetch(this.urlAPI, {

@@ -1,0 +1,41 @@
+###
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+        "username": "john",
+        "password": "pog",
+        "role": "MANAGER"
+}
+###
+
+###
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+      "username": "alex",
+      "password": "pog",
+      "role": "CUSTOMER"
+}
+###
+
+###
+POST http://localhost:3000/products
+Content-Type: application/json
+
+{
+    "name": "Potato",
+    "basePrice": "125",
+    "imageURL": "abc",
+    "TTL": 32
+}
+###
+
+###
+GET http://localhost:3000/batches
+###
+
+###
+DELETE http://localhost:3000/batches/7
+###

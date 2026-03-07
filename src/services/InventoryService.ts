@@ -1,14 +1,14 @@
-import type {IRepo} from "../repositories/IRepo.ts";
 import  {Product} from "../models/Product.ts";
 import {BatchItem} from "../models/BatchItem.ts";
 import type {BatchItemRepo} from "../repositories/BatchItemRepo.ts";
-import {InventoryDTO} from "../models/InventoryDTO.ts";
+import type {ProductRepo} from "../repositories/ProductRepo.ts";
+import type {Item} from "../models/InventoryDTO.ts";
 
 export class InventoryService{
-    private repo: IRepo<Product>
+    private repo: ProductRepo
     private batchRepo: BatchItemRepo
 
-    constructor(repo: IRepo<Product>, batchRepo: BatchItemRepo) {
+    constructor(repo: ProductRepo, batchRepo: BatchItemRepo) {
         this.repo = repo;
         this.batchRepo = batchRepo;
     }
@@ -22,7 +22,8 @@ export class InventoryService{
         if(!product)
             throw new Error("Invalid product");
         const expireDate = new Date();
-        expireDate.setHours(expireDate.getHours() + product.fixedDurationHours);
+        console.log(product);
+        expireDate.setHours(expireDate.getHours() + Number(product.TTL));
         return this.batchRepo.save(new BatchItem(0, productId, new Date(), expireDate, quantity));
     }
 
@@ -45,22 +46,27 @@ export class InventoryService{
     }
 
     public async getAllInventory(){
-        const items = await this.batchRepo.findAll();
-        let total = 0
-        let expired = 0
-        items.forEach(it => {
-            total += it.quantity;
+        const items = new Array<Item>();
+        const batches = await this.batchRepo.findAll();
+        let totalItems = 0
+        let expiringSoon = 0
+        for (const it of batches){
+            const p = await this.repo.findOne(it.productId);
+            items.push({
+                id: it.id, name: p.name, units: it.quantity, status: it.expiresAt > new Date() ? "Fresh" : "Expired", imageSrc: p.imageURL
+            })
+            totalItems += it.quantity;
             if(it.expiresAt < new Date())
-                expired += it.quantity;
-        });
-        return new InventoryDTO(items, total, expired);
+                expiringSoon += it.quantity;
+        }
+        return { items, totalItems, expiringSoon };
     }
 
     public async checkStock(batchId: number, quantity: number){
         const batch = await this.batchRepo.findOne(batchId);
         if(!batch)
             throw new Error("Invalid batch id")
-        return batch?.quantity > quantity
+        return batch?.quantity > quantity;
     }
 
     public findBatchItem(batchId: number){
