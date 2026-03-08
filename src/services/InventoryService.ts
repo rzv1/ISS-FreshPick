@@ -1,16 +1,19 @@
 import  {Product} from "../models/Product.ts";
 import {BatchItem} from "../models/BatchItem.ts";
-import type {BatchItemRepo} from "../repositories/BatchItemRepo.ts";
-import type {ProductRepo} from "../repositories/ProductRepo.ts";
+import  {type BatchItemRepo} from "../repositories/BatchItemRepo.ts";
+import  {type ProductRepo} from "../repositories/ProductRepo.ts";
 import type {Item} from "../models/InventoryDTO.ts";
+import  {type OrderRepo} from "../repositories/OrderRepo.ts";
 
 export class InventoryService{
     private repo: ProductRepo
     private batchRepo: BatchItemRepo
+    private orderRepo: OrderRepo
 
-    constructor(repo: ProductRepo, batchRepo: BatchItemRepo) {
+    constructor(repo: ProductRepo, batchRepo: BatchItemRepo, orderRepo: OrderRepo) {
         this.repo = repo;
         this.batchRepo = batchRepo;
+        this.orderRepo = orderRepo;
     }
 
     public saveProduct(name: string, price: number, imageURL: string, ttl: number){
@@ -62,6 +65,10 @@ export class InventoryService{
         return { items, totalItems, expiringSoon };
     }
 
+    public async getAllOrdersForUser(id: number){
+        return this.orderRepo.findAll(id)
+    }
+
     public async checkStock(batchId: number, quantity: number){
         const batch = await this.batchRepo.findOne(batchId);
         if(!batch)
@@ -71,6 +78,10 @@ export class InventoryService{
 
     public findBatchItem(batchId: number){
         return this.batchRepo.findOne(batchId);
+    }
+
+    public findProduct(productId: number) {
+        return this.repo.findOne(productId);
     }
 
     public deleteBatch(batchId: number){

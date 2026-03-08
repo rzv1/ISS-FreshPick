@@ -1,6 +1,7 @@
 import { useServices } from "../context/ServiceContext.tsx";
 import { useState } from "react";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../context/AuthContext.tsx";
 
 interface LoginState{
     loggedIn: boolean;
@@ -13,6 +14,7 @@ interface LoginPageProps{
 export const LoginPage = ( {onLoginSuccess}: LoginPageProps) => {
     const container  = useServices();
     const authService = container.authService;
+    const {setId} = useAuth();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
@@ -21,6 +23,7 @@ export const LoginPage = ( {onLoginSuccess}: LoginPageProps) => {
         const user = await authService.login(username, password);
         if(user){
             onLoginSuccess({ loggedIn: true, role: user.role});
+            setId(user.id);
             if(user.role === "MANAGER")
                 navigate("/admin");
             else

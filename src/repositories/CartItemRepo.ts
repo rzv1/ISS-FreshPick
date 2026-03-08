@@ -1,15 +1,10 @@
-import type {IRepo} from "./IRepo.ts";
 import type {CartItem} from "../models/CartItem.ts";
 
-export class CartItemRepo implements IRepo<CartItem>{
-    private urlAPI = 'http://localhost:3000/CartItems';
+export class CartItemRepo{
+    private urlAPI = 'http://localhost:3000/cartItems';
 
-    findAll(): Promise<CartItem[]> {
-        throw new Error("Method not implemented.");
-    }
-
-    async findAllByUser(userId: number) {
-        const res = await fetch(this.urlAPI + "?userId=" + userId);
+    async findAllByUser(userId: number): Promise<CartItem[]> {
+        const res = await fetch(this.urlAPI + "/" + userId);
         if(!res.ok)
             throw new Error("Not found")
         return res.json();

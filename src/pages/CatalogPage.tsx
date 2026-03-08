@@ -3,16 +3,19 @@ import {Product} from "../models/Product.ts";
 import {useEffect, useState} from "react";
 import {CatalogProduct} from "./CatalogProduct.tsx";
 import {Header} from "./Header.tsx";
+import {useAuth} from "../context/AuthContext.tsx";
 
 export const CatalogPage = () => {
     const container = useServices();
     const service = container.inventoryService;
     const cartService = container.cartService;
+    const {id} = useAuth();
     const [data, setData] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const onAddClick = (id: number)=> {
-        cartService.addProductToCart(id).then()
+    const onAddClick = (productId: number)=> {
+        if(id)
+        cartService.addProductToCart(productId, id).then()
     }
 
     useEffect(() => {

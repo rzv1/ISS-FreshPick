@@ -118,6 +118,77 @@ app.post('/batches', async (req, res) => {
     }
 })
 
+app.post('/orders', async (req, res) => {
+    const { total, userId } = req.body;
+    try {
+        const newOrder = await prisma.order.create({
+            data: {
+                total: total,
+                userId: userId
+            }
+        })
+        res.status(201).json(newOrder)
+    } catch (err) {
+        res.json({err: err.message});
+    }
+})
+
+app.post('/orderItems', async (req, res) => {
+    const { orderId, appliedPrice, productName, selectedQuantity } = req.body;
+    try {
+        const newOrderItem = await prisma.orderItem.create({
+            data: {
+                orderId: orderId,
+                price: appliedPrice,
+                quantity: selectedQuantity,
+                productName: productName
+            }
+        })
+        res.status(201).json(newOrderItem);
+    } catch (err) {
+        res.json({err: err.message});
+    }
+})
+
+app.get('/orders/:id', async (req, res) => {
+    try{
+        const orders = await prisma.order.findMany({
+            where: {
+                userId: Number(req.params.id)
+            }
+        });
+        res.json(orders);
+    } catch (err){
+        res.status(500).json("error" + err);
+    }
+})
+
+app.get('/orderItems/:id', async (req, res) => {
+    try{
+        const orderItems = await prisma.orderItem.findMany({
+            where: {
+                orderId: Number(req.params.id)
+            }
+        });
+        res.json(orderItems);
+    } catch (err){
+        res.status(500).json("error" + err);
+    }
+})
+
+app.get('/cartItems/:id', async (req, res) => {
+    try{
+        const cartItems = await prisma.cartItem.findMany({
+            where: {
+                userId: Number(req.params.id)
+            }
+        });
+        res.json(cartItems);
+    } catch (err){
+        res.status(500).json("error" + err);
+    }
+})
+
 app.delete('/batches/:id', async (req, res) => {
     try{
         const batch = await prisma.batch.delete({

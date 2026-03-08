@@ -14,10 +14,16 @@ export class CartService{
     public async addCartItem(userId: number, batchId: number, productName: string, price: number){
         const batch = await this.invService.findBatchItem(batchId);
         if(batch){
-            const item = new CartItem(0, userId, batchId, productName, 1, price);
+            const product = await this.invService.findProduct(batch.productId);
+            const item = new CartItem(0, userId, product.imageURL, batchId, productName, 1, price);
             return this.repo.save(item);
         }
         return null;
+    }
+
+    public async addProductToCart(productId: number, userId: number){
+        const product = await this.invService.findProduct(productId);
+        await this.repo.save(new CartItem(0, userId, product.imageURL, null, product.name, 1, product.basePrice))
     }
 
     public removeCartItem(itemId: number){
