@@ -133,6 +133,19 @@ app.post('/orders', async (req, res) => {
     }
 })
 
+app.get('/orders/:id', async (req, res) => {
+    try{
+        const orders = await prisma.order.findMany({
+            where: {
+                userId: Number(req.params.id)
+            }
+        });
+        res.json(orders);
+    } catch (err){
+        res.status(500).json("error" + err);
+    }
+})
+
 app.post('/orderItems', async (req, res) => {
     const { orderId, appliedPrice, productName, selectedQuantity } = req.body;
     try {
@@ -147,19 +160,6 @@ app.post('/orderItems', async (req, res) => {
         res.status(201).json(newOrderItem);
     } catch (err) {
         res.json({err: err.message});
-    }
-})
-
-app.get('/orders/:id', async (req, res) => {
-    try{
-        const orders = await prisma.order.findMany({
-            where: {
-                userId: Number(req.params.id)
-            }
-        });
-        res.json(orders);
-    } catch (err){
-        res.status(500).json("error" + err);
     }
 })
 
@@ -178,11 +178,24 @@ app.get('/orderItems/:id', async (req, res) => {
 
 app.get('/cartItems/:id', async (req, res) => {
     try{
-        const cartItems = await prisma.cartItem.findMany({
+        const cartItems = await prisma.cartItem.findUnique({
             where: {
-                userId: Number(req.params.id)
+                id: Number(req.params.id)
             }
         });
+        res.json(cartItems);
+    } catch (err){
+        res.status(500).json("error" + err);
+    }
+})
+
+app.get('/users/:id/cartItems', async (req, res) => {
+    try {
+        const cartItems = await prisma.cartItem.findMany({
+            where: {
+                userId: Number(req.params.usedId)
+            }
+        })
         res.json(cartItems);
     } catch (err){
         res.status(500).json("error" + err);

@@ -1,10 +1,12 @@
 import type {CartItem} from "../models/CartItem.ts";
+import type {OrderItem} from "../models/OrderItem.ts";
+import type {Order} from "../models/Order.ts";
 
 export class CartItemRepo{
     private urlAPI = 'http://localhost:3000/cartItems';
 
     async findAllByUser(userId: number): Promise<CartItem[]> {
-        const res = await fetch(this.urlAPI + "/" + userId);
+        const res = await fetch(this.urlAPI + "/users/" + userId);
         if(!res.ok)
             throw new Error("Not found")
         return res.json();
@@ -25,6 +27,14 @@ export class CartItemRepo{
         if(!res.ok)
             throw new Error("CartItem creation error");
         return res.json();
+    }
+
+    async saveOrderItem(item: OrderItem): Promise<OrderItem | undefined> {
+
+    }
+
+    async saveOrder(item: Order): Promise<Order | undefined> {
+        const res = await fetch(this.)
     }
 
     async delete(itemId: number): Promise<void> {
