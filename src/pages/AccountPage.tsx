@@ -26,7 +26,7 @@ export const AccountPage = () => {
             let newTotalOrders = 0;
             res?.forEach(order => {
                 newTotal = newTotal + Number(order.total);
-                newTotalSaved = newTotalSaved + Number(order.total) * 0.1;
+                newTotalSaved = newTotalSaved + Number(order.total) * 0.16;
                 newTotalOrders = newTotalOrders + 1;
             })
             setTotal(newTotal); setTotalSaved(newTotalSaved); setTotalOrders(newTotalOrders);
@@ -42,13 +42,13 @@ export const AccountPage = () => {
             <div className="grid grid-cols-2 gap-3 pb-6">
                 <AccountCard
                     headline="Total Spent"
-                    content={"$" + total}
+                    content={Number(total).toFixed(2) + " Lei"}
                     Icon={DollarSign}
                     buttonContent="Details"
                 />
                 <AccountCard
                     headline="Total Saved via Deals"
-                    content={"$" + totalSaved}
+                    content={Number(totalSaved).toFixed(2) + " Lei"}
                     Icon={BadgePercent}
                     buttonContent="Details"
                 />
@@ -83,7 +83,7 @@ export const AccountPage = () => {
                 {orders.map((order, idx) => (
                     <OrderItem
                         key={order.id}
-                        number={idx + 1}
+                        number={orders.length - idx}
                         date={order.timestamp}
                         total={order.total}
                     />

@@ -14,7 +14,7 @@ export const OrderItem = ({number, date, total}: OrderItemProps) => {
             </span>
                 <div className="flex items-center gap-2 mt-0.5">
                 <span className="text-[15px] font-bold text-gray-900">
-                    ${Number(total).toFixed(2)}
+                    {Number(total).toFixed(2)} Lei
                 </span>
 
                 </div>

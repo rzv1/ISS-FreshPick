@@ -32,22 +32,14 @@ export class InventoryService{
         return this.batchRepo.save(new BatchItem(0, productId, new Date(), expireDate, quantity));
     }
 
+    public async updateBatchQuantity(batchId: number, quantity: number){
+        const batch = await this.batchRepo.findOne(batchId);
+        if(batch)
+        return this.batchRepo.update(batchId, batch.quantity - quantity)
+    }
+
     public getAllProducts(){
         return this.repo.findAll();
-    }
-
-    public getAllBatchItems(){
-        return this.batchRepo.findAll();
-    }
-
-    public async getAllProductsByID(ids: number[]){
-        const products = new Array<Product>()
-        for (const id of ids) {
-            const product = await this.repo.findOne(id);
-            if (product)
-                products.push(product);
-        }
-        return products;
     }
 
     public async getAllInventory(){
@@ -72,11 +64,23 @@ export class InventoryService{
         return this.orderRepo.findAll(id)
     }
 
+    public async getStockForProduct(productId: number){
+        const batches = await this.batchRepo.findByProductId(productId);
+        if(batches) {
+            let stock = 0;
+            for (const batch of batches) {
+                stock += batch.quantity
+            }
+            return stock;
+        }
+        return 0
+    }
+
     public async checkStock(batchId: number, quantity: number){
         const batch = await this.batchRepo.findOne(batchId);
         if(!batch)
             throw new Error("Invalid batch id")
-        return batch?.quantity > quantity;
+        return batch?.quantity >= quantity;
     }
 
     public findBatchItem(batchId: number){

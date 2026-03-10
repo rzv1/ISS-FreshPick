@@ -23,8 +23,7 @@ export class CartService{
     public async addCartItem(userId: number, batchId: number, productName: string, imageURL: string, discountedPrice: number, price: number){
         const batch = await this.invService.findBatchItem(batchId);
         if(batch){
-            const product = await this.invService.findProduct(batch.productId);
-            const item = new CartItem(0, userId, product.imageURL, batchId, productName, 1, price);
+            const item = new CartItem(0, userId, batchId, imageURL, productName, 1, price, discountedPrice);
             return this.repo.save(item);
         }
         return null;
@@ -33,7 +32,7 @@ export class CartService{
     public async addProductToCart(productId: number, userId: number){
         const product = await this.invService.findProduct(productId);
         if(product)
-        await this.repo.save(new CartItem(0, userId, product.imageURL, null, product.name, 1, product.basePrice))
+        await this.repo.save(new CartItem(0, userId, null, product.imageURL, product.name, 1, product.basePrice, 1))
     }
 
     public removeCartItem(itemId: number){
@@ -45,10 +44,10 @@ export class CartService{
         if(userId){
             const items = await this.getAllForUser(userId)
             for (const it of items) {
-                total += it.appliedPrice
+                total += it.appliedPrice * it.quantity
                 if(it.batchId) {
                     if(!await this.invService.checkStock(it.batchId, it.quantity))
-                        return {text: "Selected quantity of" + it.productName + "exceeds stock", type: "fail"};
+                        return {text: "Selected quantity of " + it.productName + " exceeds stock!", type: "fail"};
                 }
             }
             const order = await this.orderRepo.saveOrder(new Order(0, userId, total, new Date()))
@@ -56,13 +55,15 @@ export class CartService{
             for (const it of items) {
                 const orderItem = new OrderItem(0, order.id, it.productName, it.quantity, it.imageURL, it.appliedPrice)
                 this.orderRepo.saveOrderItem(orderItem).then();
+                if(it.batchId)
+                    await this.invService.updateBatchQuantity(it.batchId, it.quantity)
             }
             const cartItems = await this.getAllForUser(userId);
             for (const it of cartItems) {
                 await this.repo.delete(it.id)
             }
         }
-        return {text: "Order confirmed", type: "success"}
+        return {text: "Order confirmed!", type: "success"}
     }
 
     public async incrementCartItem(itemId: number) {

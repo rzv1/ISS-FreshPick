@@ -33,15 +33,15 @@ export const DealProduct = ({id, imageURL, name, price, discountedPrice, closest
             <div className="flex justify-between items-end mb-3">
                 <div className="flex flex-col">
                 <span className="text-xs text-gray-400 line-through">
-                    Reg. ${price.toFixed(2)}
+                    PRP. {price.toFixed(2)} Lei
                 </span>
                     <span className="text-lg font-bold text-[#a67b4b]">
-                    ${(price*discountedPrice).toFixed(2)}
+                    {(price*discountedPrice).toFixed(2)} Lei
                 </span>
                 </div>
 
                 <div className="bg-[#b57a41] text-white text-sm font-bold px-2 py-1 rounded-full">
-                    -{Math.round(discountedPrice*100)}%
+                    -{Math.round((1-discountedPrice)*100)}%
                 </div>
             </div>
 

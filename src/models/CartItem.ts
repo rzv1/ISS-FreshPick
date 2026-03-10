@@ -6,15 +6,17 @@ export class CartItem{
     public productName: string;
     public quantity: number;
     public appliedPrice: number;
+    public discountedPrice: number;
 
 
-    constructor(id: number, userId: number, imageURL: string, batchId: number | null, productName: string, selectedQuantity: number, appliedPrice: number) {
+    constructor(id: number, userId: number, batchId: number | null, imageURL: string, productName: string, quantity: number, appliedPrice: number, discountedPrice: number) {
         this.id = id;
         this.userId = userId;
         this.batchId = batchId;
         this.imageURL = imageURL;
         this.productName = productName;
-        this.quantity = selectedQuantity;
+        this.quantity = quantity;
         this.appliedPrice = appliedPrice;
+        this.discountedPrice = discountedPrice;
     }
 }

@@ -73,7 +73,7 @@ export const CartPage = () => {
             <div className="grow">
             <div className="flex flex-col">
                 {cartItems.map(item => (
-                    <CartProduct id={item.id} productName={item.productName} imageURL={item.imageURL} appliedPrice={item.appliedPrice} quantity={item.quantity} onIncrement={handleIncrement} onDecrement={handleDecrement} onDelete={handleDelete} />
+                    <CartProduct key={item.id} id={item.id} productName={item.productName} imageURL={item.imageURL} appliedPrice={item.appliedPrice} discountedPrice={item.discountedPrice} quantity={item.quantity} onIncrement={handleIncrement} onDecrement={handleDecrement} onDelete={handleDelete} />
                 ))}
             </div>
         </div>

@@ -139,6 +139,9 @@ app.get('/orders/:id', async (req, res) => {
         const orders = await prisma.order.findMany({
             where: {
                 userId: Number(req.params.id)
+            },
+            orderBy: {
+                timestamp: 'desc'
             }
         });
         res.json(orders);
@@ -179,7 +182,7 @@ app.get('/orderItems/:id', async (req, res) => {
 })
 
 app.post('/cartItems', async (req, res) => {
-    const { batchId, appliedPrice, productName, imageURL, quantity, userId } = req.body;
+    const { batchId, appliedPrice, discountedPrice, productName, imageURL, quantity, userId } = req.body;
     try{
         const cartItem = await prisma.cartItem.create({
             data: {
@@ -187,6 +190,7 @@ app.post('/cartItems', async (req, res) => {
                 quantity: quantity,
                 userId: Number(userId),
                 appliedPrice: Number(appliedPrice),
+                discountedPrice: Number(discountedPrice),
                 productName: productName,
                 imageURL: imageURL
             }
@@ -207,6 +211,22 @@ app.get('/cartItems/:id', async (req, res) => {
         res.json(cartItems);
     } catch (err){
         res.status(500).json("error" + err);
+    }
+})
+
+app.patch('/batches/:id', async (req, res) => {
+    try{
+        const batch = await prisma.batch.update({
+            where: {
+                id: Number(req.params.id)
+            },
+            data: {
+                quantity: Number(req.body.quantity)
+            }
+        })
+        res.json(batch);
+    } catch (err){
+        res.json({err: err.message})
     }
 })
 
@@ -289,18 +309,21 @@ app.get('/batches/deals', async (req, res) => {
         })
 
         const finalDeals: DealDTO[] = Object.values(groupedByProduct).map(batches => {
-            const sorted = batches.sort((a, b) => a.expiresAt.getTime() - b.expiresAt.getTime())
+            const sorted = batches.sort((a, b) => {
+                return a.expiresAt.getTime() - b.expiresAt.getTime()
+            })
             const closestBatch = sorted[0];
             let discountedPrice = 0;
-            const numberOfHours = closestBatch.expiresAt.getHours() - new Date().getHours()
+            const diffInMs = closestBatch.expiresAt.getTime() - new Date().getTime()
+            const numberOfHours = diffInMs / (1000 * 60 * 60)
             if (numberOfHours < 12)
                 discountedPrice = 0.5
             else if (numberOfHours < 24)
-                discountedPrice = 0.35
+                discountedPrice = 0.65
             else if (numberOfHours < 36)
-                discountedPrice = 0.2
+                discountedPrice = 0.8
             else
-                discountedPrice = 0.1
+                discountedPrice = 0.9
 
             return {
                 batchId: closestBatch.id,
@@ -314,6 +337,19 @@ app.get('/batches/deals', async (req, res) => {
         })
         res.status(200).json(finalDeals)
     } catch(err){
+        res.json({err: err.message})
+    }
+})
+
+app.get('/batches/product/:id', async (req, res) => {
+    try {
+        const batches = await prisma.batch.findMany({
+            where: {
+                productId: Number(req.params.id)
+            }
+        })
+        res.json(batches)
+    } catch (err){
         res.json({err: err.message})
     }
 })

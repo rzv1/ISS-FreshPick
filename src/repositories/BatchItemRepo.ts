@@ -18,6 +18,13 @@ export class BatchItemRepo implements IRepo<BatchItem>{
         return res.json();
     }
 
+    async findByProductId(productId: number): Promise<BatchItem[] | undefined> {
+        const res = await fetch(this.urlAPI + "/product/" + productId);
+        if(res.status === 401)
+            return undefined
+        return res.json();
+    }
+
     async save(item: Omit<BatchItem, 'id'>): Promise<BatchItem | undefined> {
         const res = await fetch(this.urlAPI, {
             method: 'POST',
@@ -26,6 +33,15 @@ export class BatchItemRepo implements IRepo<BatchItem>{
         });
         if (res.status === 401)
             return undefined;
+        return res.json();
+    }
+
+    async update(batchId: number, quantity: number): Promise<BatchItem | undefined> {
+        const res = await fetch(this.urlAPI + "/" + batchId, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({quantity: quantity})
+        })
         return res.json();
     }
 

@@ -3,16 +3,17 @@ interface CartProductProps{
     productName: string;
     imageURL: string;
     appliedPrice: number;
+    discountedPrice: number;
     quantity: number;
     onIncrement: (id: number) => void;
     onDecrement: (id: number) => void;
     onDelete: (id: number) => void;
 }
 
-export const CartProduct = ({id, productName, imageURL, appliedPrice, quantity, onIncrement, onDecrement, onDelete}:CartProductProps) => {
+export const CartProduct = ({id, productName, imageURL, appliedPrice, discountedPrice, quantity, onIncrement, onDecrement, onDelete}:CartProductProps) => {
     return (
         <div className="flex items-center gap-4 py-4 border-b border-gray-200/60 last:border-0">
-            <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2 shrink-0">
+            <div className="w-25 h-25 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2 shrink-0">
                 <img
                     src={imageURL}
                     alt={productName}
@@ -21,18 +22,29 @@ export const CartProduct = ({id, productName, imageURL, appliedPrice, quantity, 
             </div>
 
             <div className="flex flex-col flex-grow">
-                <h3 className="text-base font-bold text-gray-800 leading-tight">
+                <h3 className="text-lg font-bold text-gray-800 leading-tight">
                     {productName}
                 </h3>
-                <span className="text-sm text-gray-500 mb-2">
-                Reg. ${appliedPrice.toFixed(2)}
-            </span>
+                {discountedPrice < 1 ? (
+                    <div className="flex flex-col">
+                        <span className="text-xs text-gray-400 line-through">
+                            PRP: {Number(appliedPrice).toFixed(2)} Lei
+                        </span>
+                        <span className="text-sm font-bold text-[#FF8B41]">
+                            Pret: {(appliedPrice * discountedPrice).toFixed(2)} Lei
+                        </span>
+                    </div>
+                ) : (
+                    <span className="text-sm text-gray-800">
+                        Pret: {Number(appliedPrice).toFixed(2)} Lei
+                    </span>
+                )}
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 mt-1">
                     <button
                         onClick={() => onDecrement(id)}
                         style={{backgroundColor: '#7b8964'}}
-                        className="w-8 h-8 flex items-center justify-center bg-[#96a188] active:bg-[#838e76] text-white rounded-lg transition-colors"
+                        className="w-5 h-8 shrink-0 flex items-center justify-center bg-[#96a188] active:bg-[#838e76] text-white rounded-lg transition-colors"
                     >
                         <span className="text-xl leading-none font-medium mb-[2px]">-</span>
                     </button>

@@ -4,15 +4,25 @@ import {useServices} from "../context/ServiceContext.tsx";
 import {StockCard} from "./StockCard.tsx";
 import type {Product} from "../models/Product.ts";
 
+interface ProductWithStock{
+    product: Product,
+    stock: number
+}
+
 export const StockPage = () => {
     const container = useServices();
     const inventoryService = container.inventoryService;
-    const [items, setItems] = useState<Product[]>([])
+    const [items, setItems] = useState<ProductWithStock[]>([])
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         inventoryService.getAllProducts()
-            .then(data =>setItems(data))
+            .then(async (data) => {
+                const dataWithStock = await Promise.all(data.map(async (p) => ({
+                    product: p, stock: await inventoryService.getStockForProduct(p.id)
+                })));
+                setItems(dataWithStock)
+            })
             .catch(err => console.error(err))
             .finally(() => setLoading(false));
     }, [inventoryService]);
@@ -32,7 +42,7 @@ export const StockPage = () => {
             <Header title={"Stock Replenishment"}/>
             <div className="flex flex-col mt-4">
             {items.map(it => {return (
-                <StockCard key={it.id} id={it.id} name={it.name} image={it.imageURL} units={it.basePrice} />
+                <StockCard key={it.product.id} id={it.product.id} name={it.product.name} image={it.product.imageURL} units={it.stock} />
         )})}
             </div>
         </div>

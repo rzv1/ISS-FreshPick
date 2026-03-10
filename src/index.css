@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @theme {
-  --color-harvest: #F3F5EF;
+  --color-harvest: rgba(243, 245, 239, 0.85);
   --color-harvest-dark: #7B9965;
 }
 :root {

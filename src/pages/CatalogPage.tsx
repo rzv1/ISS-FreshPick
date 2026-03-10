@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {CatalogProduct} from "./CatalogProduct.tsx";
 import {Header} from "./Header.tsx";
 import {useAuth} from "../context/AuthContext.tsx";
+import {Notification} from "./Notification.tsx";
 
 export const CatalogPage = () => {
     const container = useServices();
@@ -12,10 +13,18 @@ export const CatalogPage = () => {
     const {id} = useAuth();
     const [data, setData] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("");
 
-    const onAddClick = (productId: number)=> {
-        if(id)
-        cartService.addProductToCart(productId, id).then()
+    const onAddClick = (productId: number, name: string)=> {
+        if(id) {
+            cartService.addProductToCart(productId, id).then()
+            setAlertMessage("Product " + name + " added to cart!");
+            setAlertType("yes");
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 2000)
+        }
     }
 
     useEffect(() => {
@@ -35,7 +44,7 @@ export const CatalogPage = () => {
     )
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen pb-24">
             <Header title="Catalog View" />
             
             <div className="flex justify-between items-center mb-4 px-1">
@@ -51,13 +60,15 @@ export const CatalogPage = () => {
                         key={it.id}
                         id={it.id}
                         name={it.name}
-                        TTL={it.TTL}
                         basePrice={it.basePrice}
                         imageURL={it.imageURL}
                         onAddClick={onAddClick}
                     />
                 ))}
             </div>
+            {showAlert && (
+                <Notification text={alertMessage} type={alertType} onClose={() => setShowAlert(false)} />
+            )}
         </div>
     );
 }

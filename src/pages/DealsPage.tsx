@@ -46,7 +46,7 @@ export const DealsPage = () => {
     )
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen pb-24">
             <Header title="Freshness Deals"/>
             <div className="flex overflow-x-auto gap-2 pb-4 no-scrollbar">
                 <button
@@ -70,7 +70,7 @@ export const DealsPage = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-3 mt-2">
-                {data.map(deal => (
+                {data.map(deal => deal.quantityAvailable > 0 && (
                     <DealProduct
                         key={deal.batchId}
                         id={deal.batchId}

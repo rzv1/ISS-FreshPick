@@ -54,7 +54,7 @@ model CartItem {
   imageURL        String
   productName     String
   appliedPrice    Decimal
-  discountedPrice Decimal
+  discountedPrice Decimal @default(1)
 }
 
 model OrderItem {

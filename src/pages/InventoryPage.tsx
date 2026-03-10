@@ -11,10 +11,12 @@ export const InventoryPage = () => {
         try {
             setLoading(true);
             await inventoryService.deleteBatch(id);
-            inventoryService.getAllInventory()
-                .then((res) => setData(res))
-                .catch((err) => console.log(err))
-                .finally(() => setLoading(false));
+            setTimeout(() => {
+                inventoryService.getAllInventory()
+                    .then((res) => setData(res))
+                    .catch((err) => console.log(err))
+                    .finally(() => setLoading(false));
+            }, 100)
         } catch(err){
             console.error("Failed with error: " + err)
         } finally{
@@ -49,7 +51,7 @@ export const InventoryPage = () => {
     )
 
     return (
-        <div>
+        <div className="pb-20">
             <Header title={"Inventory Management"}/>
 
             <div className="flex justify-between mt-4 gap-4">
