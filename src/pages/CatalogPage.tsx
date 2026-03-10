@@ -24,12 +24,19 @@ export const CatalogPage = () => {
             .finally(() => setLoading(false))
     }, [service]);
 
-    if(loading)
-        return <div>Loading items...</div>
+    if (loading) return (
+        <div>
+            <Header title={"Catalog View"}/>
+            <div className="flex flex-col items-center justify-center p-12">
+                <div className="w-12 h-12 border-4 border-[#8fb07d]/20 border-t-[#8fb07d] rounded-full animate-spin"></div>
+                <p className="mt-4 text-[#8fb07d] font-medium animate-pulse">Fetching products...</p>
+            </div>
+        </div>
+    )
 
     return (
-        <div className="px-4 py-6 min-h-screen bg-[#f8f9f5]">
-            <Header title="Welcome Alex" />
+        <div className="min-h-screen">
+            <Header title="Catalog View" />
             
             <div className="flex justify-between items-center mb-4 px-1">
                 <h2 className="text-lg font-bold text-gray-800">Featured Fresh Items</h2>

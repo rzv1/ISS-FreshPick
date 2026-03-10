@@ -2,6 +2,7 @@ import { useServices } from "../context/ServiceContext.tsx";
 import { useState } from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../context/AuthContext.tsx";
+import {Header} from "./Header.tsx";
 
 interface LoginState{
     loggedIn: boolean;
@@ -32,9 +33,8 @@ export const LoginPage = ( {onLoginSuccess}: LoginPageProps) => {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen px-8 bg-gray-50">
-            <img src="../../public/logo-harvest.png" alt="Logo" className="w-24 mb-4" />
-            <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
+        <div className="flex flex-col items-center justify-center px-8 min-h-screen">
+            <Header title={"Welcome back"} />
             <p className="text-gray-500 mb-8">Sign in to your Harvest account</p>
 
             <div className="w-full space-y-4">
@@ -48,7 +48,7 @@ export const LoginPage = ( {onLoginSuccess}: LoginPageProps) => {
                 />
 
                 <button className="w-full bg-[#8fb07d] text-white p-4 rounded-3xl font-semibold text-lg flex justify-between items-center px-8"
-                onClick={handleLogin}>
+                onClick={handleLogin} style={{backgroundColor: '#7b8964'}}>
                     Sign In <span>→</span>
                 </button>
             </div>

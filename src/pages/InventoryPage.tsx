@@ -4,15 +4,22 @@ import { useServices } from "../context/ServiceContext.tsx";
 import {StatCard} from "./StatCard.tsx";
 import {InventoryItem} from "./InventoryItem.tsx";
 import type {InventoryDTO} from "../models/InventoryDTO.ts";
+import {Header} from "./Header.tsx";
 
 export const InventoryPage = () => {
-    const handleDelete = (id: number) => {
-        inventoryService.deleteBatch(id);
-        setLoading(true);
-        inventoryService.getAllInventory()
-            .then((res) => setData(res))
-            .catch((err) => console.log(err))
-            .finally(() => setLoading(false));
+    const handleDelete = async (id: number) => {
+        try {
+            setLoading(true);
+            await inventoryService.deleteBatch(id);
+            inventoryService.getAllInventory()
+                .then((res) => setData(res))
+                .catch((err) => console.log(err))
+                .finally(() => setLoading(false));
+        } catch(err){
+            console.error("Failed with error: " + err)
+        } finally{
+            setLoading(false)
+        }
     };
 
     const container = useServices();
@@ -31,29 +38,28 @@ export const InventoryPage = () => {
             .finally(() => setLoading(false))
     }, [inventoryService]);
 
-    if (loading) return <div className="p-6 text-center">Loading data...</div>;
+    if (loading) return (
+        <div>
+            <Header title={"Inventory Management"}/>
+            <div className="flex flex-col items-center justify-center p-12">
+                <div className="w-12 h-12 border-4 border-[#8fb07d]/20 border-t-[#8fb07d] rounded-full animate-spin"></div>
+                <p className="mt-4 text-[#8fb07d] font-medium animate-pulse">Fetching inventory items...</p>
+            </div>
+        </div>
+    )
 
     return (
-        <div className="p-6 bg-[#f9f9f7] min-h-screen pb-28">
-            <div className="flex items-center gap-2 mb-8">
-                <img src="/../../public/logo-harvest.png" alt="Harvest" className="w-8 h-8 object-contain"/>
-                <div className="h-8 w-[1px] bg-gray-300 mx-1"></div>
-                <h1>Inventory <br/> Management</h1>
-            </div>
+        <div>
+            <Header title={"Inventory Management"}/>
 
-            <div>
+            <div className="flex justify-between mt-4 gap-4">
                 <StatCard label="Total Items" value={data.totalItems} Icon={Users} />
                 <StatCard label="Expiring Soon" value={data.expiringSoon} Icon={Clock} variant="warning"/>
             </div>
 
-            <div>
-                <span>Product</span>
-                <span>Status</span>
-            </div>
-
-            <div>
+            <div className="flex flex-col gap-2 mt-4">
                 {data.items.map((item) => {return (
-                    <InventoryItem key={item.id} {...item} onDelete={() => handleDelete(item.id)} />
+                    <InventoryItem key={item.id} name={item.name} units={item.units} imageSrc={item.imageSrc} status={item.status} onDelete={() => handleDelete(item.id)} />
                 )})}
             </div>
         </div>

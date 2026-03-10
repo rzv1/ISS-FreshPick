@@ -15,26 +15,28 @@ export const AddProductPage = () => {
     const [image, setImage] = useState("");
     const [ttl, setTtl] = useState(0);
 
-    const handleSave = () => {
-        service.saveProduct(name, price, image, ttl).then(p => {
-            if(p){
-                setAlertMessage("Added product with id " + p.id);
-                setAlertType("success");
-                setName(""); setPrice(0); setImage(""); setTtl(0);
-            }
-            else {
-                setAlertMessage("Error occurred");
-                setAlertType("fail")
-            }
-            setShowAlert(true)
-            setTimeout(() => {
-                setShowAlert(false);
-            }, 5000);
-        });
+    const handleSave = async () => {
+        const item = await service.saveProduct(name, price, image, ttl);
+        if(item){
+            setAlertMessage("Added product with id " + item.id);
+            setAlertType("success");
+            setName("");
+            setPrice(0);
+            setImage("");
+            setTtl(0);
+        }
+        else{
+            setAlertMessage("Incomplete fields!");
+            setAlertType("fail")
+        }
+        setShowAlert(true)
+        setTimeout(() => {
+            setShowAlert(false);
+        }, 3000);
     }
 
     return (
-        <div className="min-h-screen bg-[#f8f9f5] px-6 pt-4 pb-24 font-sans">
+        <div>
             <Header title="Add New Product" />
 
             <div className="flex flex-col gap-5 mt-8">
@@ -51,7 +53,6 @@ export const AddProductPage = () => {
                     />
                 </div>
 
-                {/* Price */}
                 <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-gray-500 ml-1" htmlFor="price">
                         Price ($)
@@ -99,7 +100,8 @@ export const AddProductPage = () => {
 
                 <button
                     onClick={handleSave}
-                    className="w-full mt-6 bg-harvest active:bg-harvest-dark text-white font-medium text-lg py-4 rounded-full transition-colors shadow-md"
+                    style={{backgroundColor: '#7b8964'}}
+                    className="w-full mt-6 text-white font-medium text-lg py-4 rounded-full transition-colors shadow-md"
                 >
                     Save Product
                 </button>

@@ -31,8 +31,9 @@ export const CatalogProduct = ({id, name, imageURL, basePrice, TTL, onAddClick}:
                     ${Number(basePrice).toFixed(2)}
                 </span>
                     <button
+                        style={{backgroundColor: '#7b8964'}}
                         onClick={() => onAddClick(id)}
-                        className="w-7 h-7 bg-[#96a188] active:bg-[#838e76] text-white flex items-center justify-center rounded-lg transition-colors">
+                        className="w-7 h-7 bg-harvest active:bg-[#838e76] text-white flex items-center justify-center rounded-lg transition-colors">
                         <span className="text-xl leading-none font-light mb-[2px]">+</span>
                     </button>
                 </div>

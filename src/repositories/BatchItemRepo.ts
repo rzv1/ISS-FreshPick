@@ -1,5 +1,6 @@
 import {BatchItem} from "../models/BatchItem.ts";
 import type {IRepo} from "./IRepo.ts";
+import type {DealDTO} from "../models/DealDTO.ts";
 
 export class BatchItemRepo implements IRepo<BatchItem>{
     private urlAPI='http://localhost:3000/batches';
@@ -36,8 +37,10 @@ export class BatchItemRepo implements IRepo<BatchItem>{
             throw new Error("error");
     }
 
-    async getDeals() {
+    async getDeals(): Promise<DealDTO[]> {
         const res = await fetch(this.urlAPI + '/deals')
+        if(!res.ok)
+            throw new Error("error");
         return res.json();
     }
 }

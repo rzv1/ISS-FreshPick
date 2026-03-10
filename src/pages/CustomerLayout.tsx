@@ -4,7 +4,7 @@ import {CustomerNavbar} from "./CustomerNavbar.tsx";
 
 export const CustomerLayout = () => {
     return (
-        <div className="min-h-screen pb-16">
+        <div className="min-h-screen overflow-x-hidden">
             <Outlet/>
             <CustomerNavbar />
         </div>

@@ -22,7 +22,7 @@ export class OrderRepo {
     }
 
     public async saveOrderItem(item: OrderItem): Promise<OrderItem | undefined> {
-        const res = await fetch(this.urlAPI, {
+        const res = await fetch(this.urlAPIitems, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(item)

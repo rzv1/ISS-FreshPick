@@ -4,6 +4,7 @@ import cors from 'cors';
 import {PrismaPg} from "@prisma/adapter-pg"
 import {PrismaClient} from "./generated/prisma/client";
 import * as process from "node:process";
+import {DealDTO} from "../src/models/DealDTO";
 
 const app = express();
 const adapter = new PrismaPg({
@@ -123,8 +124,8 @@ app.post('/orders', async (req, res) => {
     try {
         const newOrder = await prisma.order.create({
             data: {
-                total: total,
-                userId: userId
+                userId: userId,
+                total: Number(total)
             }
         })
         res.status(201).json(newOrder)
@@ -147,13 +148,14 @@ app.get('/orders/:id', async (req, res) => {
 })
 
 app.post('/orderItems', async (req, res) => {
-    const { orderId, appliedPrice, productName, selectedQuantity } = req.body;
+    const { orderId, price, productName, imageURL, quantity } = req.body;
     try {
         const newOrderItem = await prisma.orderItem.create({
             data: {
                 orderId: orderId,
-                price: appliedPrice,
-                quantity: selectedQuantity,
+                price: price,
+                imageURL: imageURL,
+                quantity: quantity,
                 productName: productName
             }
         })
@@ -176,6 +178,25 @@ app.get('/orderItems/:id', async (req, res) => {
     }
 })
 
+app.post('/cartItems', async (req, res) => {
+    const { batchId, appliedPrice, productName, imageURL, quantity, userId } = req.body;
+    try{
+        const cartItem = await prisma.cartItem.create({
+            data: {
+                batchId: batchId ? Number(batchId) : null,
+                quantity: quantity,
+                userId: Number(userId),
+                appliedPrice: Number(appliedPrice),
+                productName: productName,
+                imageURL: imageURL
+            }
+        })
+        res.json(cartItem);
+    } catch(err){
+        res.json({err: err.message})
+    }
+})
+
 app.get('/cartItems/:id', async (req, res) => {
     try{
         const cartItems = await prisma.cartItem.findUnique({
@@ -189,16 +210,45 @@ app.get('/cartItems/:id', async (req, res) => {
     }
 })
 
-app.get('/users/:id/cartItems', async (req, res) => {
+app.patch('/cartItems/:id', async (req, res) => {
+    try{
+        const cartItem = await prisma.cartItem.update({
+            where: {
+                id: Number(req.params.id)
+            },
+            data: {
+                quantity: Number(req.body.quantity)
+            }
+        })
+        res.json(cartItem);
+    } catch (err){
+        res.json({err: err.message});
+    }
+})
+
+app.get('/cartItems/users/:id', async (req, res) => {
     try {
         const cartItems = await prisma.cartItem.findMany({
             where: {
-                userId: Number(req.params.usedId)
+                userId: Number(req.params.id)
             }
         })
         res.json(cartItems);
     } catch (err){
         res.status(500).json("error" + err);
+    }
+})
+
+app.delete('/cartItems/:id', async (req, res) => {
+    try {
+        const cartItem = await prisma.cartItem.delete({
+            where: {
+                id: Number(req.params.id)
+            }
+        })
+        res.json(cartItem);
+    } catch (err) {
+        res.json({err: err.message});
     }
 })
 
@@ -211,6 +261,72 @@ app.delete('/batches/:id', async (req, res) => {
         })
         res.json(batch)
     } catch (err){
+        res.json({err: err.message})
+    }
+})
+
+app.get('/batches/deals', async (req, res) => {
+    try{
+        const now = new Date();
+        const batches = await prisma.batch.findMany({
+            where: {
+                expiresAt: {
+                    gt: now
+                }
+            },
+            include: {
+                product: true
+            }
+        })
+        const groupedByProduct: Record<string, typeof batches> = {};
+
+        batches.forEach(batch => {
+            const productName = batch.product.name;
+            if (!groupedByProduct[productName]){
+                groupedByProduct[productName] = [];
+            }
+            groupedByProduct[productName].push(batch);
+        })
+
+        const finalDeals: DealDTO[] = Object.values(groupedByProduct).map(batches => {
+            const sorted = batches.sort((a, b) => a.expiresAt.getTime() - b.expiresAt.getTime())
+            const closestBatch = sorted[0];
+            let discountedPrice = 0;
+            const numberOfHours = closestBatch.expiresAt.getHours() - new Date().getHours()
+            if (numberOfHours < 12)
+                discountedPrice = 0.5
+            else if (numberOfHours < 24)
+                discountedPrice = 0.35
+            else if (numberOfHours < 36)
+                discountedPrice = 0.2
+            else
+                discountedPrice = 0.1
+
+            return {
+                batchId: closestBatch.id,
+                imageURL: closestBatch.product.imageURL,
+                productName: closestBatch.product.name,
+                originalPrice: Number(closestBatch.product.basePrice),
+                discountedPrice: discountedPrice,
+                quantityAvailable: closestBatch.quantity,
+                closestExpiry: closestBatch.expiresAt
+            }
+        })
+        res.status(200).json(finalDeals)
+    } catch(err){
+        res.json({err: err.message})
+    }
+})
+
+app.get('/batches/:id', async (req, res) => {
+    try{
+        const batch = await prisma.batch.findUnique({
+            where: {
+                id: Number(req.params.id)
+            }
+        })
+        res.json(batch)
+    } catch (err) {
         res.json({err: err.message})
     }
 })

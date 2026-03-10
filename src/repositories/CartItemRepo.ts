@@ -1,6 +1,4 @@
 import type {CartItem} from "../models/CartItem.ts";
-import type {OrderItem} from "../models/OrderItem.ts";
-import type {Order} from "../models/Order.ts";
 
 export class CartItemRepo{
     private urlAPI = 'http://localhost:3000/cartItems';
@@ -29,24 +27,8 @@ export class CartItemRepo{
         return res.json();
     }
 
-    async saveOrderItem(item: OrderItem): Promise<OrderItem | undefined> {
-
-    }
-
-    async saveOrder(item: Order): Promise<Order | undefined> {
-        const res = await fetch(this.)
-    }
-
     async delete(itemId: number): Promise<void> {
         const res = await fetch(this.urlAPI + '/' + itemId, {
-            method: 'DELETE'
-        });
-        if(!res.ok)
-            throw new Error("error");
-    }
-
-    async deleteAllForUser(userId: number) {
-        const res = await fetch(this.urlAPI + "?userId=" + userId, {
             method: 'DELETE'
         });
         if(!res.ok)

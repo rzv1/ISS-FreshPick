@@ -23,7 +23,7 @@ export const AccountCard = ({headline, content, Icon, buttonContent}:AccountCard
                 {content}
             </div>
 
-            <button className="w-full bg-[#7b8964] active:bg-[#6a7755] text-white text-sm font-medium py-1.5 rounded-xl transition-colors">
+            <button style={{backgroundColor: '#7b8964'}} className="w-full bg-[#7b8964] active:bg-[#6a7755] text-white text-sm font-medium py-1.5 rounded-xl transition-colors">
                 {buttonContent}
             </button>
         </div>

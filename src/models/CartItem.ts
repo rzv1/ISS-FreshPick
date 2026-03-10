@@ -4,7 +4,7 @@ export class CartItem{
     public readonly batchId: number | null;
     public imageURL: string;
     public productName: string;
-    public selectedQuantity: number;
+    public quantity: number;
     public appliedPrice: number;
 
 
@@ -14,7 +14,7 @@ export class CartItem{
         this.batchId = batchId;
         this.imageURL = imageURL;
         this.productName = productName;
-        this.selectedQuantity = selectedQuantity;
+        this.quantity = selectedQuantity;
         this.appliedPrice = appliedPrice;
     }
 }

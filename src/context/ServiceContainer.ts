@@ -17,7 +17,7 @@ export class ServiceContainer {
 
     public readonly authService = new AuthService(this.userRepo);
     public readonly inventoryService = new InventoryService(this.productRepo, this.batchRepo, this.orderRepo);
-    public readonly cartService = new CartService(this.cartItemRepo, this.inventoryService);
+    public readonly cartService = new CartService(this.cartItemRepo, this.orderRepo, this.inventoryService);
 }
 
 export const services = new ServiceContainer();

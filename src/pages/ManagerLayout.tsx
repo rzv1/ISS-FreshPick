@@ -3,7 +3,7 @@ import {ManagerNavbar} from "./ManagerNavbar.tsx";
 
 export const ManagerLayout = () => {
     return (
-        <div className="min-h-screen pb-16">
+        <div className="min-h-screen overflow-x-hidden">
             <Outlet/>
             <ManagerNavbar />
         </div>

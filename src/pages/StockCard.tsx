@@ -45,6 +45,7 @@ export const StockCard = ({id, name, image, units}: Product) => {
             <div className="flex justify-between gap-2">
                 {increments.map((val) => (
                     <button key={val} onClick={() => handleClick(val)}
+                            style={{backgroundColor: 'rgba(123, 137, 100, 0.3)'}}
                         className="flex-1 py-3 bg-[#c2ccb8] hover:bg-[#b2bc9d] text-gray-800 font-bold rounded-lg transition-colors text-lg">
                         +{val}
                     </button>

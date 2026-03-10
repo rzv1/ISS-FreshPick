@@ -1,5 +1,6 @@
 export interface DealDTO{
-    id: number;
+    batchId: number;
+    imageURL: string;
     productName: string;
     originalPrice: number;
     discountedPrice: number;

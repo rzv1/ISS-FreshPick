@@ -5,6 +5,7 @@ import {BadgePercent, CalendarDays, DollarSign, ShoppingBag} from "lucide-react"
 import {OrderItem} from "./OrderItem.tsx";
 import {useAuth} from "../context/AuthContext.tsx";
 import type {Order} from "../models/Order.ts";
+import {Header} from "./Header.tsx";
 
 export const AccountPage = () => {
     const container = useServices();
@@ -14,33 +15,31 @@ export const AccountPage = () => {
     const [total, setTotal] = useState(0);
     const [totalSaved, setTotalSaved] = useState(0);
     const [totalOrders, setTotalOrders] = useState(0);
-    const [accountLifetime, setAccountLifetime] = useState(new Date());
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if(id)
         service.getAllOrdersForUser(id).then(res => {
+            setLoading(true);
             let newTotal = 0;
             let newTotalSaved = 0;
             let newTotalOrders = 0;
             res?.forEach(order => {
-                newTotal = newTotal + order.totalAmount;
-                newTotalSaved = newTotalSaved + order.totalAmount * 0.1;
+                newTotal = newTotal + Number(order.total);
+                newTotalSaved = newTotalSaved + Number(order.total) * 0.1;
                 newTotalOrders = newTotalOrders + 1;
             })
             setTotal(newTotal); setTotalSaved(newTotalSaved); setTotalOrders(newTotalOrders);
             if(res)
                 setOrders(res);
+            setLoading(false);
         })
     }, [service, id]);
     return (
-        <div className="min-h-screen bg-[#f8f9f5] px-4 pt-6 pb-24">
+        <div>
+            <Header title={"Account Statistics"}/>
 
-            <h1 className="text-[22px] font-bold text-[#2a3624] tracking-tight mb-4">
-                Account History / Statistics
-            </h1>
-
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-2 gap-3 pb-6">
                 <AccountCard
                     headline="Total Spent"
                     content={"$" + total}
@@ -55,13 +54,13 @@ export const AccountPage = () => {
                 />
                 <AccountCard
                     headline="Total Orders"
-                    content={totalOrders + "orders"}
+                    content={totalOrders + " orders"}
                     Icon={ShoppingBag}
                     buttonContent="Details"
                 />
                 <AccountCard
                     headline="Account Lifetime"
-                    content="3 yrs, 2 mos, 12 days"
+                    content="12 days"
                     Icon={CalendarDays}
                     buttonContent="Account Details"
                 />
@@ -71,14 +70,22 @@ export const AccountPage = () => {
                 Order History
             </h2>
 
-            <div className="flex flex-col">
-                {orders.map(order => (
+            {loading && (
+                <div>
+                    <div className="flex flex-col items-center justify-center p-12">
+                        <div className="w-12 h-12 border-4 border-[#8fb07d]/20 border-t-[#8fb07d] rounded-full animate-spin"></div>
+                        <p className="mt-4 text-[#8fb07d] font-medium animate-pulse">Fetching orders...</p>
+                    </div>
+                </div>
+                )}
+
+            <div className="flex flex-col pb-22">
+                {orders.map((order, idx) => (
                     <OrderItem
-                        key={order.number}
-                        number={order.number}
-                        date={order.date}
+                        key={order.id}
+                        number={idx + 1}
+                        date={order.timestamp}
                         total={order.total}
-                        imageURLs={order.imageURLs}
                     />
                 ))}
             </div>

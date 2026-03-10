@@ -4,6 +4,7 @@ import  {type BatchItemRepo} from "../repositories/BatchItemRepo.ts";
 import  {type ProductRepo} from "../repositories/ProductRepo.ts";
 import type {Item} from "../models/InventoryDTO.ts";
 import  {type OrderRepo} from "../repositories/OrderRepo.ts";
+import type {DealDTO} from "../models/DealDTO.ts";
 
 export class InventoryService{
     private repo: ProductRepo
@@ -17,7 +18,8 @@ export class InventoryService{
     }
 
     public saveProduct(name: string, price: number, imageURL: string, ttl: number){
-        return this.repo.save(new Product(0, name, imageURL, price, ttl));
+        if(price > 0 && name != "" && imageURL != "" && ttl != 0)
+            return this.repo.save(new Product(0, name, imageURL, price, ttl));
     }
 
     public async saveBatchItem(productId: number, quantity: number){
@@ -55,8 +57,9 @@ export class InventoryService{
         let expiringSoon = 0
         for (const it of batches){
             const p = await this.repo.findOne(it.productId);
+            const date = new Date(it.expiresAt)
             items.push({
-                id: it.id, name: p.name, units: it.quantity, status: it.expiresAt > new Date() ? "Fresh" : "Expired", imageSrc: p.imageURL
+                id: it.id, name: p.name, units: it.quantity, status: date.getTime() > new Date().getTime() ? "Fresh" : "Expired", imageSrc: p.imageURL
             })
             totalItems += it.quantity;
             if(it.expiresAt < new Date())
@@ -84,11 +87,23 @@ export class InventoryService{
         return this.repo.findOne(productId);
     }
 
-    public deleteBatch(batchId: number){
+    public async deleteBatch(batchId: number){
         this.batchRepo.delete(batchId);
     }
 
     public async getAllDeals(){
         return await this.batchRepo.getDeals();
+    }
+
+    public sortByExpiryAsc(data: DealDTO[]){
+        return [...data].sort((a, b) => new Date(a.closestExpiry).getTime() - new Date(b.closestExpiry).getTime());
+    }
+
+    public sortByDiscountDesc(data: DealDTO[]) {
+        return [...data].sort((a, b) => a.discountedPrice - b.discountedPrice)
+    }
+
+    public sortByPriceAsc(data: DealDTO[]){
+        return [...data].sort((a, b) => a.originalPrice * a.discountedPrice - b.originalPrice * b.discountedPrice)
     }
 }

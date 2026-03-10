@@ -3,10 +3,9 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -46,12 +45,16 @@ model Batch {
 }
 
 model CartItem {
-  id       Int   @id @default(autoincrement())
-  userId   Int
-  user     User  @relation(fields: [userId], references: [id])
-  batchId  Int
-  batch    Batch @relation(fields: [batchId], references: [id])
-  quantity Int
+  id              Int     @id @default(autoincrement())
+  userId          Int
+  user            User    @relation(fields: [userId], references: [id])
+  batchId         Int?
+  batch           Batch?  @relation(fields: [batchId], references: [id])
+  quantity        Int
+  imageURL        String
+  productName     String
+  appliedPrice    Decimal
+  discountedPrice Decimal
 }
 
 model OrderItem {
@@ -59,6 +62,7 @@ model OrderItem {
   orderId     Int
   order       Order   @relation(fields: [orderId], references: [id])
   productName String
+  imageURL    String
   quantity    Int
   price       Decimal
 }

@@ -17,15 +17,22 @@ export const StockPage = () => {
             .finally(() => setLoading(false));
     }, [inventoryService]);
 
-    if (loading)
-        return <div>Loading products...</div>;
+    if (loading) return (
+        <div className="min-h-screen pr-4 pb-20 pt-4">
+            <Header title={"Stock Replenishment"}/>
+            <div className="flex flex-col items-center justify-center p-12">
+                <div className="w-12 h-12 border-4 border-[#8fb07d]/20 border-t-[#8fb07d] rounded-full animate-spin"></div>
+                <p className="mt-4 text-[#8fb07d] font-medium animate-pulse">Fetching stock details...</p>
+            </div>
+        </div>
+    )
 
     return (
-        <div className="min-h-screen bg-[#f8f9f5] px-4 pb-20 pt-4">
+        <div className="min-h-screen pr-4 pb-20 pt-4">
             <Header title={"Stock Replenishment"}/>
             <div className="flex flex-col mt-4">
-            ${items.map(it => {return (
-                <StockCard id={it.id} name={it.name} image={it.imageURL} units={it.basePrice} />
+            {items.map(it => {return (
+                <StockCard key={it.id} id={it.id} name={it.name} image={it.imageURL} units={it.basePrice} />
         )})}
             </div>
         </div>
