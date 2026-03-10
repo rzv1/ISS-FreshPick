@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "CartItem" ADD COLUMN     "discountedPrice" DECIMAL(65,30) NOT NULL DEFAULT 1,
+ALTER COLUMN "appliedPrice" SET DATA TYPE DECIMAL(65,30);
