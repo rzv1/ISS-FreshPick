@@ -5,6 +5,7 @@ import {VitePWA} from "vite-plugin-pwa";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/ISS-FreshPick/',
   plugins: [react(), tailwindcss(), VitePWA({
     registerType: 'autoUpdate',
     includeAssets: ['logo-192x192.png', 'logo-512x512.png'],
