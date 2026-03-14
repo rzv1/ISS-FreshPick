@@ -2,7 +2,7 @@ import  {type Product} from "../models/Product.ts";
 import type {IRepo} from "./IRepo.ts";
 
 export class ProductRepo implements IRepo<Product>{
-    private urlAPI = "http://localhost:3000/products";
+    private urlAPI = "https://iss-harvest.onrender.com/products";
 
     async findAll(): Promise<Product[]> {
         const res = await fetch(this.urlAPI);

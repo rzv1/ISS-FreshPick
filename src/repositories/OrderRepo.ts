@@ -2,8 +2,8 @@ import type {Order} from "../models/Order.ts";
 import type {OrderItem} from "../models/OrderItem.ts";
 
 export class OrderRepo {
-    private urlAPI = "http://localhost:3000/orders";
-    private urlAPIitems = "http://localhost:3000/orderItems"
+    private urlAPI = "https://iss-harvest.onrender.com/orders";
+    private urlAPIitems = "https://iss-harvest.onrender.com/orderItems"
     public async findAll(id: number): Promise<Order[] | undefined> {
         const res = await fetch(this.urlAPI + "/" + id);
         return res.json()

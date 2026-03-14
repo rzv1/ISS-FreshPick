@@ -1,7 +1,7 @@
 import type {CartItem} from "../models/CartItem.ts";
 
 export class CartItemRepo{
-    private urlAPI = 'http://localhost:3000/cartItems';
+    private urlAPI = 'https://iss-harvest.onrender.com/cartItems';
 
     async findAllByUser(userId: number): Promise<CartItem[]> {
         const res = await fetch(this.urlAPI + "/users/" + userId);

@@ -3,7 +3,7 @@ import type {IRepo} from "./IRepo.ts";
 import type {DealDTO} from "../models/DealDTO.ts";
 
 export class BatchItemRepo implements IRepo<BatchItem>{
-    private urlAPI='http://localhost:3000/batches';
+    private urlAPI='https://iss-harvest.onrender.com/batches';
 
     async findAll(): Promise<BatchItem[]> {
         const res = await fetch(this.urlAPI);
