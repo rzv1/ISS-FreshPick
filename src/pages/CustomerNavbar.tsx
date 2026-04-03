@@ -45,6 +45,7 @@ export const CustomerNavbar = () => {
                 </>
             )}
         </NavLink>
+
     </nav>
     );
 };

@@ -5,6 +5,7 @@ import {PrismaPg} from "@prisma/adapter-pg"
 import {PrismaClient} from "./generated/prisma/client";
 import * as process from "node:process";
 import {DealDTO} from "../src/models/DealDTO";
+import * as os from "node:os";
 
 const app = express();
 const adapter = new PrismaPg({
@@ -12,7 +13,9 @@ const adapter = new PrismaPg({
 });
 const prisma = new PrismaClient({adapter});
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://iss-harvest.vercel.app'
+}));
 app.use(express.json());
 
 app.post('/products', async (req, res) => {
@@ -66,7 +69,9 @@ app.post('/users', async (req, res) => {
                role
            }
        })
-       res.status(201).json(newUser);
+
+       res.status(201).json(process.env.DATABASE_URL!)
+       //res.status(201).json(newUser);
    }
    catch (err) {
        res.status(400).json({err: err.message})
@@ -86,7 +91,7 @@ app.post('/users/login', async (req, res) => {
         res.status(200).json(user);
     }
     catch (err) {
-        res.status(400).json({err: err.message})
+        res.status(400).json({err: err.message + process.env.DATABASE_URL})
     }
 });
 

@@ -60,6 +60,8 @@ export const LoginPage = ( {onLoginSuccess}: LoginPageProps) => {
             <button className="mt-12 text-green-700 font-medium">
                 Are you a Store Manager? Login here
             </button>
+            <p>Customer credentials: alex : pog</p>
+            <p>Manager credentials: john : pog</p>
         </div>
     );
 };

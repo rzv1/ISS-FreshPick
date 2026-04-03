@@ -28,7 +28,7 @@ export const StockPage = () => {
     }, [inventoryService]);
 
     if (loading) return (
-        <div className="min-h-screen pr-4 pb-20 pt-4">
+        <div >
             <Header title={"Stock Replenishment"}/>
             <div className="flex flex-col items-center justify-center p-12">
                 <div className="w-12 h-12 border-4 border-[#8fb07d]/20 border-t-[#8fb07d] rounded-full animate-spin"></div>
@@ -38,9 +38,9 @@ export const StockPage = () => {
     )
 
     return (
-        <div className="min-h-screen pr-4 pb-20 pt-4">
+        <div >
             <Header title={"Stock Replenishment"}/>
-            <div className="flex flex-col mt-4">
+            <div className="flex flex-col mt-4 ">
             {items.map(it => {return (
                 <StockCard key={it.product.id} id={it.product.id} name={it.product.name} image={it.product.imageURL} units={it.stock} />
         )})}

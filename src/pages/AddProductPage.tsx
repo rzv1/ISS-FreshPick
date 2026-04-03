@@ -55,13 +55,13 @@ export const AddProductPage = () => {
 
                 <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-gray-500 ml-1" htmlFor="price">
-                        Price ($)
+                        Price (Lei)
                     </label>
                     <input
                         id="price"
                         type="number"
                         value={price}
-                        onChange={(e) => setPrice(Number(e.target.value))}
+                        onChange={(e) => setPrice(parseFloat(e.target.value))}
                         className="w-full bg-white border border-[#d4d9cc] rounded-xl px-4 py-3.5 text-gray-800 outline-none focus:border-[#7b8964] transition-colors shadow-sm"
                     />
                 </div>

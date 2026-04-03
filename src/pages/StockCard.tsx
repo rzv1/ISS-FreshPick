@@ -22,7 +22,7 @@ export const StockCard = ({id, name, image, units}: Product) => {
     }
 
     return (
-        <div className="relative flex flex-col p-4 m-2 bg-white border border-gray-300 rounded-2xl shadow-sm w-full max-w-md">
+        <div className="relative flex flex-col p-4 m-2 bg-white border border-gray-300 rounded-2xl shadow-sm">
             {showAdded && (<div className="absolute top-2 right-2 bg-gray-500 text-white text-xs px-2 py-1 rounded-full animate-fade-in">
                     Added!
                 </div>

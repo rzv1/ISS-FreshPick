@@ -10,7 +10,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #a0ff00;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -36,6 +36,15 @@ body {
   min-height: 100vh;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    background-color: #101212;
+  }
+  body {
+    background-color: black;
+  }
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -48,7 +57,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--color-harvest);
   cursor: pointer;
   transition: border-color 0.25s;
 }

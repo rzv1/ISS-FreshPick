@@ -48,6 +48,9 @@ export const DealsPage = () => {
     return (
         <div className="min-h-screen pb-24">
             <Header title="Freshness Deals"/>
+            <div className="fixed bottom-1/11 right-1/18 w-15 h-15 rounded-4xl justify-center flex bg-harvest-dark">
+                <h3 className="content-center text-2xl">💬</h3>
+            </div>
             <div className="flex overflow-x-auto gap-2 pb-4 no-scrollbar">
                 <button
                     onClick={handleSortByPriceAsc}
