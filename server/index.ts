@@ -5,7 +5,6 @@ import {PrismaPg} from "@prisma/adapter-pg"
 import {PrismaClient} from "./generated/prisma/client";
 import * as process from "node:process";
 import {DealDTO} from "../src/models/DealDTO";
-import * as os from "node:os";
 
 const app = express();
 const adapter = new PrismaPg({
@@ -70,8 +69,7 @@ app.post('/users', async (req, res) => {
            }
        })
 
-       res.status(201).json(process.env.DATABASE_URL!)
-       //res.status(201).json(newUser);
+       res.status(201).json(newUser);
    }
    catch (err) {
        res.status(400).json({err: err.message})
